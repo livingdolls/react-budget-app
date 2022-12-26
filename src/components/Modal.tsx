@@ -1,9 +1,12 @@
+import { useRecoilState } from "recoil";
+import ModalOpen from "../store/Modal";
+
 type props = {
-	visible: boolean;
-	setVisible: any;
+	judul: any;
 	children: any;
 };
-const Modal: React.FC<props> = ({ visible, setVisible, children }) => {
+const Modal: React.FC<props> = ({ children, judul }) => {
+	const [visible, setVisible] = useRecoilState(ModalOpen);
 	if (!visible) {
 		return null;
 	}
@@ -14,7 +17,7 @@ const Modal: React.FC<props> = ({ visible, setVisible, children }) => {
 				<div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
 					<div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
 						<h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-							Terms of Service
+							{judul}
 						</h3>
 						<button
 							type="button"

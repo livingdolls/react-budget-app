@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 const Register = () => {
 	return (
 		<div className="p-1 xl:p-10">
@@ -62,7 +64,15 @@ const Register = () => {
 			</div>
 
 			<div>
-				<p>Sudah punya akun ? login disini</p>
+				<p>
+					Sudah punya akun ? login{" "}
+					<NavLink
+						to={"/auth/"}
+						className="text-accent-green-500 hover:text-accent-green-900"
+					>
+						disini
+					</NavLink>
+				</p>
 			</div>
 		</div>
 	);
