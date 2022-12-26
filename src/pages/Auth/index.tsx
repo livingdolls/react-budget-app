@@ -9,7 +9,6 @@ import Register from "./Register";
 const Auth = () => {
 	const user = useRecoilState(AuthUser);
 
-	console.log(user);
 	return (
 		<div className="w-full h-screen flex flex-col lg:flex-row  justify-center">
 			<div className="bg-accent-green-500   lg:w-1/2 lg:flex hidden lg:flex-col justify-center">

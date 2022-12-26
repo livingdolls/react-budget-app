@@ -8,7 +8,7 @@ priv.interceptors.response.use(
 		const prevRequest = error?.config;
 		if (error?.response?.status === 401 && !prevRequest?.sent) {
 			prevRequest.sent = true;
-			const newAccessToken = await clientPrivate("/auth/token");
+			const newAccessToken = await clientPrivate("/auth/refresh-token");
 			const token = newAccessToken.data.accessToken;
 			prevRequest.headers["Authorization"] = `Bearer ${token}`;
 			return clientPrivate(prevRequest);
