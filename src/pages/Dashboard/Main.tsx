@@ -4,43 +4,43 @@ import { NavLink, Route, Routes } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import Modal from "../../components/Modal";
 import { SpinnerWhite } from "../../components/Spinner";
-import priv from "../../config/Interceptor";
 import { ViewExpensePlan } from "../../Services/ExpansePlan";
 import AuthUser, { ProfileUser } from "../../store/Auth.store";
+import ModalOpen from "../../store/Modal";
+import Rupiah from "../../utils/Rupiah";
 import AddExpensePlan from "./AddExpensePlan";
 import ExpensePlan from "./ExpensePlan";
 import Income from "./Income";
 
-const getMainBudget = async (id: any, token: any) => {
-	const getBudget = await priv.get(`/mainBudget/${id}`, {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-	});
-
-	if (getBudget.statusText !== "OK") {
-		throw new Error("gagal mengambil data");
-	}
-
-	return getBudget.data.data;
-};
-
 const Main = () => {
 	const [visible, setVisible] = useState<boolean>(false);
+	const [expense, setExpense] = useRecoilState(ModalOpen);
 	const datas = useRecoilValue(ProfileUser);
 	const [user] = useRecoilState(AuthUser);
+	const [budget, setBudget] = useState({
+		userId: "",
+		id_main_budget: "",
+		maxBudget: 0,
+		expensive: [],
+		created_at: "",
+	});
 
 	const { data, isError, isLoading, isSuccess, isFetching } = useQuery(
 		"budget",
 		() => ViewExpensePlan(datas.id_user, user),
 		{
-			onSuccess: (budget) => {},
+			onSuccess: (budgets) => {
+				setBudget(budgets.data.data);
+			},
 		}
 	);
-	console.log(data);
 
 	const handleModal = () => {
 		setVisible(!visible);
+	};
+
+	const handleModalExpense = () => {
+		setExpense(!expense);
 	};
 	return (
 		<div className=" lg:container mx-auto sm:w-10/12 xs:w-11/12 border-cyan-500 ">
@@ -68,7 +68,9 @@ const Main = () => {
 				{isFetching ? (
 					<SpinnerWhite />
 				) : (
-					<p className="text-white text-4xl">RP </p>
+					<p className="text-white text-4xl">
+						{Rupiah(budget.maxBudget)}
+					</p>
 				)}
 			</div>
 
@@ -95,17 +97,36 @@ const Main = () => {
 					INCOME
 				</NavLink>
 			</div>
+			<div className="w-[80%] border-b-2 mx-auto border-accent-green-500"></div>
+
+			<div className="w-full flex justify-around mt-4">
+				<button
+					onClick={handleModalExpense}
+					className="px-2 py-2.5 hover:bg-accent-green-900 bg-accent-green-500 rounded-md text-white font-bold "
+				>
+					Tambah Rencana Pengeluaran
+				</button>
+
+				<button>Info</button>
+			</div>
 
 			<div className="">
 				<Routes>
-					<Route index element={<ExpensePlan />} />
+					<Route
+						index
+						element={<ExpensePlan expense={budget.expensive} />}
+					/>
 					<Route path="/income" element={<Income />} />
 				</Routes>
 			</div>
 
 			<div>
 				<Modal judul={"Tambah Pengeluaran"}>
-					<AddExpensePlan handleModal={handleModal} />
+					<AddExpensePlan
+						handleModalExpense={handleModalExpense}
+						exp={budget.expensive}
+						idBudget={budget.id_main_budget}
+					/>
 				</Modal>
 			</div>
 		</div>

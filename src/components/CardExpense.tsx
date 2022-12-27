@@ -1,8 +1,15 @@
 import { useRecoilState } from "recoil";
+import { Expense } from "../pages/Dashboard/ExpensePlan";
 import ModalOpen from "../store/Modal";
+import Rupiah from "../utils/Rupiah";
 
-const CardExpense = ({ num }: any) => {
-	const [modal, setModal] = useRecoilState(ModalOpen);
+type TCExpense = {
+	num: number;
+	data: Expense;
+};
+
+const CardExpense = ({ num, data }: TCExpense) => {
+	const [, setModal] = useRecoilState(ModalOpen);
 
 	let status = "#1aebb6";
 
@@ -33,7 +40,7 @@ const CardExpense = ({ num }: any) => {
 		<div className="flex flex-col gap-10 sm:w-11/12 lg:w-5/12 bg-white  p-4  rounded-md shadow-xl">
 			{/* Header */}
 			<div className="bg-accent-green-500 -m-4 p-3 text-cyan-50 text-lg font-bold rounded-t-md flex flex-row justify-between">
-				<p>Header Card</p>
+				<p className="text-md font-md">{data.title}</p>
 				<p>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -70,16 +77,23 @@ const CardExpense = ({ num }: any) => {
 				{/* Info */}
 
 				<div className="flex justify-between py-2 mt-1">
-					<p className="text-xl font-medium ml-3 text-gray-800">
-						Terpakai
-					</p>
-					<p className="text-xl font-medium mr-3 text-gray-800">
-						Sisa
-					</p>
+					<div className="ml-2">
+						<p className="font-bold text-md">
+							{Rupiah(data.usage)}
+						</p>
+						<p className="text-xs">Terpakai</p>
+					</div>
+
+					<div>
+						<p className="font-bold text-md">
+							{Rupiah(data.maxExpense - data.usage)}
+						</p>
+						<p className="text-xs">Sisa</p>
+					</div>
 				</div>
 
 				{/* Action */}
-				<div>
+				<div className="flex justify-between items-center border-t-4 -mb-2">
 					<button
 						type="button"
 						className="text-white mt-4 bg-accent-green-500 hover:bg-accent-green-900 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -87,6 +101,10 @@ const CardExpense = ({ num }: any) => {
 					>
 						Tambah
 					</button>
+
+					<p className="text-accent-green-900 text-xl font-medium">
+						{Rupiah(data.maxExpense)}
+					</p>
 				</div>
 			</div>
 		</div>

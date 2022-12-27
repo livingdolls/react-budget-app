@@ -42,11 +42,6 @@ const Login = () => {
 		e.preventDefault();
 		await mutateAsync(user);
 	};
-
-	// if (isSuccess) {
-	// 	navigate("/home");
-	// }
-
 	return (
 		<div className="p-10 ">
 			<div className="mb-6">
