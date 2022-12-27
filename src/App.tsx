@@ -4,12 +4,15 @@ import Main from "./pages/Dashboard/Main";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import ProtectRoute from "./middleware/ProtectRoute";
 
 function App() {
 	return (
 		<div className="">
 			<Routes>
-				<Route path="/home/*" element={<Main />} />
+				<Route element={<ProtectRoute />}>
+					<Route path="/home/*" element={<Main />} />
+				</Route>
 				<Route path="/auth/*" element={<Auth />} />
 			</Routes>
 			<ToastContainer />

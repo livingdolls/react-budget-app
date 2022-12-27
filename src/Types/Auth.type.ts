@@ -3,3 +3,11 @@ export type TUser = {
 	email: string;
 	password: string;
 };
+
+export type TBudget = {
+	created_at?: string;
+	id_main_budget: string;
+	maxBudget: number;
+	user?: TUser;
+	userId: string;
+};

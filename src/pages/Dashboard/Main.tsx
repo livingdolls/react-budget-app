@@ -1,17 +1,22 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { NavLink, Route, Routes } from "react-router-dom";
-import CardExpense from "../../components/CardExpense";
+import { useRecoilState, useRecoilValue } from "recoil";
 import Modal from "../../components/Modal";
-import { Spinner, SpinnerWhite } from "../../components/Spinner";
-import client from "../../config/axios";
-import AuthContext from "../../context/Auth.context";
+import { SpinnerWhite } from "../../components/Spinner";
+import priv from "../../config/Interceptor";
+import { ViewExpensePlan } from "../../Services/ExpansePlan";
+import AuthUser, { ProfileUser } from "../../store/Auth.store";
 import AddExpensePlan from "./AddExpensePlan";
 import ExpensePlan from "./ExpensePlan";
 import Income from "./Income";
 
-const getMainBudget = async (id: any) => {
-	const getBudget = await client.get(`/mainBudget/${id}`);
+const getMainBudget = async (id: any, token: any) => {
+	const getBudget = await priv.get(`/mainBudget/${id}`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
 
 	if (getBudget.statusText !== "OK") {
 		throw new Error("gagal mengambil data");
@@ -22,12 +27,17 @@ const getMainBudget = async (id: any) => {
 
 const Main = () => {
 	const [visible, setVisible] = useState<boolean>(false);
-	const auth = useContext(AuthContext);
+	const datas = useRecoilValue(ProfileUser);
+	const [user] = useRecoilState(AuthUser);
 
 	const { data, isError, isLoading, isSuccess, isFetching } = useQuery(
 		"budget",
-		() => getMainBudget(auth?.auth)
+		() => ViewExpensePlan(datas.id_user, user),
+		{
+			onSuccess: (budget) => {},
+		}
 	);
+	console.log(data);
 
 	const handleModal = () => {
 		setVisible(!visible);
@@ -35,11 +45,6 @@ const Main = () => {
 	return (
 		<div className=" lg:container mx-auto sm:w-10/12 xs:w-11/12 border-cyan-500 ">
 			<div className="flex justify-center p-10 bg-accent-green-500 items-center align-baseline">
-				{isFetching ? (
-					<SpinnerWhite />
-				) : (
-					<p className="text-white">error, cek koneksi anda!</p>
-				)}
 				<button
 					type="button"
 					className="text-indigo-500 text-bold mt-4 bg-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -60,7 +65,11 @@ const Main = () => {
 						/>
 					</svg>
 				</button>
-				<p className="text-white text-4xl">RP {data?.maxBudget}</p>
+				{isFetching ? (
+					<SpinnerWhite />
+				) : (
+					<p className="text-white text-4xl">RP </p>
+				)}
 			</div>
 
 			<div className="p-5 flex justify-center ">

@@ -1,28 +1,51 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useMutation } from "react-query";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { SpinnerSmallWhite } from "../../components/Spinner";
 import { NotifyAlert } from "../../components/Toast";
 import { LoginService } from "../../Services/Auth.services";
+import AuthUser from "../../store/Auth.store";
 import { TUser } from "../../Types/Auth.type";
 
 const Login = () => {
+	const [auth, setAuth] = useRecoilState(AuthUser);
 	const [user, setUser] = useState<Omit<TUser, "nama">>({
 		email: "",
 		password: "",
 	});
+
+	const navigate = useNavigate();
 
 	const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 		setUser({ ...user, [name]: value });
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	const { isLoading, isError, isSuccess, data, mutateAsync } = useMutation(
+		"login-user",
+		LoginService,
+		{
+			onError: (error: any) => {
+				NotifyAlert("error", error.response.data);
+			},
+			onSuccess: (data) => {
+				console.log(data.signToken);
+				setAuth(data.signToken);
+				NotifyAlert("success", "Login berhasil");
+				navigate("/home/");
+			},
+		}
+	);
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		LoginService(user)
-			.then((data) => console.log(data))
-			.catch((err) => {
-				NotifyAlert("success", err.response.data);
-			});
+		await mutateAsync(user);
 	};
+
+	// if (isSuccess) {
+	// 	navigate("/home");
+	// }
 
 	return (
 		<div className="p-10 ">
@@ -72,9 +95,10 @@ const Login = () => {
 				<div className="mb-3">
 					<button
 						type="submit"
+						disabled={isLoading}
 						className="p-3 bg-accent-green-500 rounded-md w-full text-gray-900 font-bold hover:bg-accent-green-900"
 					>
-						LOGIN
+						{isLoading ? <SpinnerSmallWhite /> : "LOGIN"}
 					</button>
 				</div>
 			</form>

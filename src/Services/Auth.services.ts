@@ -8,3 +8,11 @@ export const LoginService = async (data: Omit<TUser, "nama">) => {
 
 	return respon;
 };
+
+export const FindProfileUser = async (id: string) => {
+	const respon = await client
+		.get(`/auth/user-profile/${id}`)
+		.then((res) => res.data);
+
+	return respon;
+};
