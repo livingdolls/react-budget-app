@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import Rupiah from "../../utils/Rupiah";
 import SumExpense from "../../utils/SumExpense";
 import { Expense } from "./ExpensePlan";
 import { CreateExpensePlan } from "../../Services/ExpansePlan";
+import { NotifyAlert } from "../../components/Toast";
+import { SpinnerSmallWhite } from "../../components/Spinner";
+import { useRecoilState } from "recoil";
+import ModalOpen from "../../store/Modal";
 
 type propsExpensePlan = {
-	handleModalExpense: () => void;
 	exp: Expense[];
 	idBudget: string;
+	maxBudget: number;
 };
 
 type expense = {
@@ -21,8 +25,10 @@ export type TAddExpense = {
 	idBudget: string;
 };
 
-const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
+const AddExpensePlan = ({ exp, idBudget, maxBudget }: propsExpensePlan) => {
+	const queryClient = useQueryClient();
 	const maxExpense = SumExpense(exp);
+	const [, setVisible] = useRecoilState(ModalOpen);
 	const [expense, setExpense] = useState<expense>({
 		title: "",
 		budget: 0,
@@ -34,8 +40,20 @@ const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
 	};
 
 	const mutate = useMutation(CreateExpensePlan, {
-		onMutate: () => {
-			console.log("hhh");
+		onError: (err: any) => {
+			const zod = err.response.data;
+			if (err.response.status === 400) {
+				zod.map((e: any) => {
+					NotifyAlert("error", e.message);
+				});
+			}
+		},
+		onSuccess: () => {
+			NotifyAlert("success", "Berhasil menambah rencana pengeluaran!");
+			setVisible(false);
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries("budget");
 		},
 	});
 
@@ -71,7 +89,7 @@ const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
 				>
 					Budget Max{" "}
 					<p className="text-bold inline text-red-500">{`${Rupiah(
-						Number(maxExpense)
+						Number(maxBudget - maxExpense)
 					)}`}</p>
 				</label>
 				<input
@@ -88,9 +106,10 @@ const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
 			<div className="">
 				<button
 					type="submit"
+					disabled={mutate.isLoading}
 					className="text-white text-bold mt-4 bg-accent-green-500 hover:bg-accent-green-900 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-3 py-1.5 mr-2 mb-2 "
 				>
-					Tambah Budget
+					{mutate.isLoading ? <SpinnerSmallWhite /> : "Tambah"}
 				</button>
 			</div>
 		</form>

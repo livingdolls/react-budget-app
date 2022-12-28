@@ -17,23 +17,17 @@ const Main = () => {
 	const [expense, setExpense] = useRecoilState(ModalOpen);
 	const datas = useRecoilValue(ProfileUser);
 	const [user] = useRecoilState(AuthUser);
-	const [budget, setBudget] = useState({
-		userId: "",
-		id_main_budget: "",
-		maxBudget: 0,
-		expensive: [],
-		created_at: "",
-	});
 
-	const { data, isError, isLoading, isSuccess, isFetching } = useQuery(
-		"budget",
-		() => ViewExpensePlan(datas.id_user, user),
-		{
-			onSuccess: (budgets) => {
-				setBudget(budgets.data.data);
-			},
-		}
-	);
+	const {
+		data: budgets,
+		isError,
+		isLoading,
+		isSuccess,
+		isFetching,
+		refetch,
+	} = useQuery("budget", () => ViewExpensePlan(datas.id_user, user), {
+		onSuccess: (budgets) => {},
+	});
 
 	const handleModal = () => {
 		setVisible(!visible);
@@ -42,6 +36,11 @@ const Main = () => {
 	const handleModalExpense = () => {
 		setExpense(!expense);
 	};
+
+	if (isLoading) {
+		return <p>Loading...</p>;
+	}
+
 	return (
 		<div className=" lg:container mx-auto sm:w-10/12 xs:w-11/12 border-cyan-500 ">
 			<div className="flex justify-center p-10 bg-accent-green-500 items-center align-baseline">
@@ -69,7 +68,7 @@ const Main = () => {
 					<SpinnerWhite />
 				) : (
 					<p className="text-white text-4xl">
-						{Rupiah(budget.maxBudget)}
+						{Rupiah(budgets.data.maxBudget)}
 					</p>
 				)}
 			</div>
@@ -114,7 +113,9 @@ const Main = () => {
 				<Routes>
 					<Route
 						index
-						element={<ExpensePlan expense={budget.expensive} />}
+						element={
+							<ExpensePlan expense={budgets.data.expensive} />
+						}
 					/>
 					<Route path="/income" element={<Income />} />
 				</Routes>
@@ -123,9 +124,9 @@ const Main = () => {
 			<div>
 				<Modal judul={"Tambah Pengeluaran"}>
 					<AddExpensePlan
-						handleModalExpense={handleModalExpense}
-						exp={budget.expensive}
-						idBudget={budget.id_main_budget}
+						exp={budgets.data.expensive}
+						idBudget={budgets.data.id_main_budget}
+						maxBudget={budgets.data.maxBudget}
 					/>
 				</Modal>
 			</div>

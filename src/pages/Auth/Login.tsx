@@ -30,7 +30,6 @@ const Login = () => {
 				NotifyAlert("error", error.response.data);
 			},
 			onSuccess: (data) => {
-				console.log(data.signToken);
 				setAuth(data.signToken);
 				NotifyAlert("success", "Login berhasil");
 				navigate("/home/");
