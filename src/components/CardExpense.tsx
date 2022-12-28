@@ -38,7 +38,10 @@ const CardExpense = ({ num, data, del }: TCExpense) => {
 		status = "#1aebb6";
 	}
 	return (
-		<div className="flex flex-col gap-10 sm:w-11/12 lg:w-5/12 bg-white  p-4  rounded-md shadow-xl">
+		<div
+			className="flex flex-col gap-10 sm:w-11/12 lg:w-5/12 bg-white  p-4  rounded-md shadow-xl"
+			key={data.id_expensePlan}
+		>
 			{/* Header */}
 			<div className="bg-accent-green-500 -m-4 p-3 text-cyan-50 text-lg font-bold rounded-t-md flex flex-row justify-between">
 				<p className="text-md font-md">{data.title}</p>

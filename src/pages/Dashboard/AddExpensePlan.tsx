@@ -2,12 +2,12 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import Rupiah from "../../utils/Rupiah";
 import SumExpense from "../../utils/SumExpense";
-import { Expense } from "./ExpensePlan";
 import { CreateExpensePlan } from "../../Services/ExpansePlan";
 import { NotifyAlert } from "../../components/Toast";
 import { SpinnerSmallWhite } from "../../components/Spinner";
 import { useRecoilState } from "recoil";
 import ModalOpen from "../../store/Modal";
+import { Expense } from "../../Types/Budget.types";
 
 type propsExpensePlan = {
 	exp: Expense[];
@@ -47,6 +47,8 @@ const AddExpensePlan = ({ exp, idBudget, maxBudget }: propsExpensePlan) => {
 					NotifyAlert("error", e.message);
 				});
 			}
+
+			NotifyAlert("error", err.response.data.message);
 		},
 		onSuccess: () => {
 			NotifyAlert("success", "Berhasil menambah rencana pengeluaran!");

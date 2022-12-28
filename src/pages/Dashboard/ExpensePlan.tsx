@@ -6,15 +6,7 @@ import { Dialog } from "../../components/Dialog";
 import { NotifyAlert } from "../../components/Toast";
 import { DeleteExpensePlan } from "../../Services/ExpansePlan";
 import AuthUser from "../../store/Auth.store";
-
-export type Expense = {
-	create_at?: string;
-	idMainBudget: string;
-	id_expensePlan: string;
-	maxExpense: number;
-	title: string;
-	usage: number;
-};
+import { Expense } from "../../Types/Budget.types";
 
 type TExpense = {
 	expense: Expense[];
@@ -55,7 +47,12 @@ const ExpensePlan = ({ expense }: TExpense) => {
 			{expense?.map((e) => {
 				let percent = (e.usage / e.maxExpense) * 100;
 				return (
-					<CardExpense num={percent} data={e} del={hanldeDelete} />
+					<CardExpense
+						num={percent}
+						data={e}
+						del={hanldeDelete}
+						key={e.id_expensePlan}
+					/>
 				);
 			})}
 			{dialog ? (

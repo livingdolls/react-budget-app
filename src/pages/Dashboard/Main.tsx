@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { NavLink, Route, Routes } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
+import MainModal from "../../components/MainModal";
 import Modal from "../../components/Modal";
 import { SpinnerWhite } from "../../components/Spinner";
 import { ViewExpensePlan } from "../../Services/ExpansePlan";
@@ -9,14 +10,16 @@ import AuthUser, { ProfileUser } from "../../store/Auth.store";
 import ModalOpen from "../../store/Modal";
 import Rupiah from "../../utils/Rupiah";
 import AddExpensePlan from "./AddExpensePlan";
+import AddIncome from "./AddIncome";
+import Income from "./Income/Income";
 import ExpensePlan from "./ExpensePlan";
-import Income from "./Income";
+import Budget from "./Income";
 
 const Main = () => {
-	const [visible, setVisible] = useState<boolean>(false);
 	const [expense, setExpense] = useRecoilState(ModalOpen);
 	const datas = useRecoilValue(ProfileUser);
 	const [user] = useRecoilState(AuthUser);
+	const [income, setIncome] = useState<boolean>(false);
 
 	const {
 		data: budgets,
@@ -29,12 +32,12 @@ const Main = () => {
 		onSuccess: (budgets) => {},
 	});
 
-	const handleModal = () => {
-		setVisible(!visible);
-	};
-
 	const handleModalExpense = () => {
 		setExpense(!expense);
+	};
+
+	const handleIncome = () => {
+		setIncome(!income);
 	};
 
 	if (isLoading) {
@@ -46,8 +49,8 @@ const Main = () => {
 			<div className="flex justify-center p-10 bg-accent-green-500 items-center align-baseline">
 				<button
 					type="button"
-					className="text-indigo-500 text-bold mt-4 bg-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-					onClick={handleModal}
+					className="text-white hover:bg-accent-green-900 focus:ring-4 focus:ring-accent-green-500 font-bold rounded-lg text-lg px-2 py-2  focus:outline-none dark:focus:ring-blue-800"
+					onClick={() => setIncome(true)}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +63,7 @@ const Main = () => {
 						<path
 							strokeLinecap="round"
 							strokeLinejoin="round"
-							d="M12 4.5v15m7.5-7.5h-15"
+							d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
 						/>
 					</svg>
 				</button>
@@ -73,6 +76,7 @@ const Main = () => {
 				)}
 			</div>
 
+			{/* NAVLINK */}
 			<div className="p-5 flex justify-center ">
 				<NavLink
 					className={({ isActive }) =>
@@ -95,7 +99,20 @@ const Main = () => {
 				>
 					INCOME
 				</NavLink>
+
+				<NavLink
+					className={({ isActive }) =>
+						isActive
+							? "m-2 px-5 py-2 bg-accent-green-500 font-bold rounded-md text-white hover:bg-accent-green-900"
+							: "m-2 px-5 py-2  font-bold rounded-md text-accent-green-900"
+					}
+					to="/home/budget"
+				>
+					INFO BUDGET
+				</NavLink>
 			</div>
+			{/* END LINK */}
+
 			<div className="w-[80%] border-b-2 mx-auto border-accent-green-500"></div>
 
 			<div className="w-full flex justify-around mt-4">
@@ -109,6 +126,7 @@ const Main = () => {
 				<button>Info</button>
 			</div>
 
+			{/* ROUTE */}
 			<div className="">
 				<Routes>
 					<Route
@@ -117,9 +135,14 @@ const Main = () => {
 							<ExpensePlan expense={budgets.data.expensive} />
 						}
 					/>
-					<Route path="/income" element={<Income />} />
+					<Route
+						path="/income"
+						element={<Income budget={budgets.data} />}
+					/>
+					<Route path="/budget" element={<Budget />} />
 				</Routes>
 			</div>
+			{/* END ROUTE */}
 
 			<div>
 				<Modal judul={"Tambah Pengeluaran"}>
@@ -130,6 +153,12 @@ const Main = () => {
 					/>
 				</Modal>
 			</div>
+
+			{income ? (
+				<MainModal judul={"Tambah Income"} action={handleIncome}>
+					<AddIncome budget={budgets.data} action={handleIncome} />
+				</MainModal>
+			) : null}
 		</div>
 	);
 };
