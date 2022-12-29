@@ -22,3 +22,11 @@ export type TIncome = {
 	id_income?: string;
 	title: string;
 };
+
+export type TExpense = {
+	budget: number;
+	create_at?: string;
+	idExpensePlan: string;
+	id_expense: string;
+	title: string;
+};

@@ -1,4 +1,4 @@
-import { Expense } from "../pages/Dashboard/ExpensePlan";
+import { Expense } from "../Types/Budget.types";
 
 const SumExpense = (exp: Expense[]) => {
 	let total = 0;

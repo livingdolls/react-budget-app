@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
-import CardExpense from "../../components/CardExpense";
+import CardExpense from "./ExpensePlan/CardExpense";
 import { Dialog } from "../../components/Dialog";
 import { NotifyAlert } from "../../components/Toast";
 import { DeleteExpensePlan } from "../../Services/ExpansePlan";
 import AuthUser from "../../store/Auth.store";
 import { Expense } from "../../Types/Budget.types";
+import MainModal from "../../components/MainModal";
+import EditExpensePlan from "./ExpensePlan/EditExpensePlan";
+import { WarningSvg } from "../../components/svg";
+import AddExpense from "./Expense/AddExpense";
 
 type TExpense = {
 	expense: Expense[];
@@ -16,7 +20,23 @@ const ExpensePlan = ({ expense }: TExpense) => {
 	const [user] = useRecoilState(AuthUser);
 	const queryClient = useQueryClient();
 	const [dialog, setDialog] = useState(false);
+	const [modalEdit, setModalEdit] = useState(false);
 	const [info, setInfo] = useState({ id: "", nama: "" });
+	const [editExpense, setEditExpense] = useState({
+		idMainBudget: "",
+		id_expensePlan: "",
+		maxExpense: 0,
+		title: "",
+		usage: 0,
+	});
+	const [addExpense, setAddExpense] = useState({
+		open: false,
+		info: {
+			id_expensePlan: "",
+			title: "",
+			expens: 0,
+		},
+	});
 
 	const hanldeDelete = (id: string, nama: string) => {
 		setInfo({ id: id, nama: nama });
@@ -25,7 +45,7 @@ const ExpensePlan = ({ expense }: TExpense) => {
 
 	const mutate = useMutation(DeleteExpensePlan, {
 		onError: (err) => {
-			console.log(err);
+			NotifyAlert("error", "Ada kesalahan, silahkan ulangi kembali");
 		},
 		onSuccess: () => {
 			NotifyAlert("success", "Berhasil menghapus rencana pengeluaran!");
@@ -42,6 +62,11 @@ const ExpensePlan = ({ expense }: TExpense) => {
 		mutate.mutate(d);
 	};
 
+	const handleEdit = (expense: Expense) => {
+		setEditExpense(expense);
+		setModalEdit(true);
+	};
+
 	return (
 		<div className="p-5 flex flex-col md:flex-row gap-4 flex-wrap 2xl:justify-around xl:justify-around lg:justify-center justify-start md:items-baseline ">
 			{expense?.map((e) => {
@@ -52,6 +77,17 @@ const ExpensePlan = ({ expense }: TExpense) => {
 						data={e}
 						del={hanldeDelete}
 						key={e.id_expensePlan}
+						edit={handleEdit}
+						addExpense={() =>
+							setAddExpense({
+								info: {
+									id_expensePlan: e.id_expensePlan,
+									title: e.title,
+									expens: e.maxExpense - e.usage,
+								},
+								open: true,
+							})
+						}
 					/>
 				);
 			})}
@@ -61,21 +97,7 @@ const ExpensePlan = ({ expense }: TExpense) => {
 						<div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
 							<div className="sm:flex sm:items-start">
 								<div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-									<svg
-										className="h-6 w-6 text-red-600"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-										strokeWidth="1.5"
-										stroke="currentColor"
-										aria-hidden="true"
-									>
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											d="M12 10.5v3.75m-9.303 3.376C1.83 19.126 2.914 21 4.645 21h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 4.88c-.866-1.501-3.032-1.501-3.898 0L2.697 17.626zM12 17.25h.007v.008H12v-.008z"
-										/>
-									</svg>
+									<WarningSvg />
 								</div>
 								<div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
 									<h3
@@ -114,6 +136,34 @@ const ExpensePlan = ({ expense }: TExpense) => {
 						</div>
 					</div>
 				</Dialog>
+			) : null}
+
+			{modalEdit ? (
+				<MainModal
+					judul={"Edit Expense Plan"}
+					action={() => setModalEdit(false)}
+				>
+					<EditExpensePlan
+						expense={editExpense}
+						setEditExpense={setEditExpense}
+						setModalEdit={setModalEdit}
+					/>
+				</MainModal>
+			) : null}
+
+			{addExpense.open ? (
+				<MainModal
+					judul={`Tambah pengeluaran ${addExpense.info.title}`}
+					action={() => setAddExpense({ ...addExpense, open: false })}
+				>
+					<AddExpense
+						id={addExpense.info.id_expensePlan}
+						usage={addExpense.info.expens}
+						modal={() =>
+							setAddExpense({ ...addExpense, open: false })
+						}
+					/>
+				</MainModal>
 			) : null}
 		</div>
 	);

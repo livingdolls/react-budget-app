@@ -9,17 +9,23 @@ import { ViewExpensePlan } from "../../Services/ExpansePlan";
 import AuthUser, { ProfileUser } from "../../store/Auth.store";
 import ModalOpen from "../../store/Modal";
 import Rupiah from "../../utils/Rupiah";
-import AddExpensePlan from "./AddExpensePlan";
+import AddExpensePlan from "./ExpensePlan/AddExpensePlan";
 import AddIncome from "./AddIncome";
 import Income from "./Income/Income";
 import ExpensePlan from "./ExpensePlan";
 import Budget from "./Income";
+import { AddSvg } from "../../components/svg";
+import DetailExpense from "./Expense/DetailExpense";
+import { ClimbingBoxLoader } from "react-spinners";
+import BudgetStore from "../../store/Budget.store";
+import SumExpense from "../../utils/SumExpense";
 
 const Main = () => {
 	const [expense, setExpense] = useRecoilState(ModalOpen);
 	const datas = useRecoilValue(ProfileUser);
 	const [user] = useRecoilState(AuthUser);
 	const [income, setIncome] = useState<boolean>(false);
+	const [budget, setBudget] = useRecoilState(BudgetStore);
 
 	const {
 		data: budgets,
@@ -29,7 +35,14 @@ const Main = () => {
 		isFetching,
 		refetch,
 	} = useQuery("budget", () => ViewExpensePlan(datas.id_user, user), {
-		onSuccess: (budgets) => {},
+		onSuccess: (budgets) => {
+			const usage = SumExpense(budgets.data.expensive);
+			setBudget({
+				...budget,
+				budget: budgets.data.maxBudget,
+				usage: usage,
+			});
+		},
 	});
 
 	const handleModalExpense = () => {
@@ -41,7 +54,11 @@ const Main = () => {
 	};
 
 	if (isLoading) {
-		return <p>Loading...</p>;
+		return (
+			<div className="h-screen w-screen flex justify-center flex-col items-center content-center">
+				<ClimbingBoxLoader color="#36d7b7" size={50} />
+			</div>
+		);
 	}
 
 	return (
@@ -52,28 +69,13 @@ const Main = () => {
 					className="text-white hover:bg-accent-green-900 focus:ring-4 focus:ring-accent-green-500 font-bold rounded-lg text-lg px-2 py-2  focus:outline-none dark:focus:ring-blue-800"
 					onClick={() => setIncome(true)}
 				>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 24 24"
-						strokeWidth={1.5}
-						stroke="currentColor"
-						className="w-6 h-6"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-						/>
-					</svg>
+					<AddSvg />
 				</button>
-				{isFetching ? (
-					<SpinnerWhite />
-				) : (
-					<p className="text-white text-4xl">
-						{Rupiah(budgets.data.maxBudget)}
-					</p>
-				)}
+
+				<p className="text-white text-4xl">
+					{Rupiah(budgets.data.maxBudget)}
+				</p>
+				{isFetching ? <SpinnerWhite /> : null}
 			</div>
 
 			{/* NAVLINK */}
@@ -140,6 +142,10 @@ const Main = () => {
 						element={<Income budget={budgets.data} />}
 					/>
 					<Route path="/budget" element={<Budget />} />
+					<Route
+						path="/expense-plan/:idExpensePlan"
+						element={<DetailExpense />}
+					/>
 				</Routes>
 			</div>
 			{/* END ROUTE */}
@@ -149,7 +155,6 @@ const Main = () => {
 					<AddExpensePlan
 						exp={budgets.data.expensive}
 						idBudget={budgets.data.id_main_budget}
-						maxBudget={budgets.data.maxBudget}
 					/>
 				</Modal>
 			</div>

@@ -80,7 +80,7 @@ const Income = ({ budget }: TIncomeProps) => {
 
 	return (
 		<div>
-			<div className=" w-3/4 bg-white shadow-2xl">
+			<div className=" w-[90%] m-auto bg-white shadow-2xl">
 				{income.isLoading ? (
 					<Spinner />
 				) : (
