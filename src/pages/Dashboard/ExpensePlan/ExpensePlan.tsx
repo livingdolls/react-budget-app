@@ -1,22 +1,23 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
-import CardExpense from "./ExpensePlan/CardExpense";
-import { Dialog } from "../../components/Dialog";
-import { NotifyAlert } from "../../components/Toast";
-import { DeleteExpensePlan } from "../../Services/ExpansePlan";
-import AuthUser from "../../store/Auth.store";
-import { Expense } from "../../Types/Budget.types";
-import MainModal from "../../components/MainModal";
-import EditExpensePlan from "./ExpensePlan/EditExpensePlan";
-import { WarningSvg } from "../../components/svg";
-import AddExpense from "./Expense/AddExpense";
+import CardExpense from "./CardExpense";
+import { Dialog } from "../../../components/Dialog";
+import { NotifyAlert } from "../../../components/Toast";
+import { DeleteExpensePlan } from "../../../Services/ExpansePlan.service";
+import AuthUser from "../../../store/Auth.store";
+import { Expense } from "../../../Types/Budget.types";
+import MainModal from "../../../components/MainModal";
+import EditExpensePlan from "./EditExpensePlan";
+import { WarningSvg } from "../../../components/svg";
+import AddExpense from "../Expense/AddExpense";
 
 type TExpense = {
 	expense: Expense[];
+	handleModalExpense: () => void;
 };
 
-const ExpensePlan = ({ expense }: TExpense) => {
+const ExpensePlan = ({ expense, handleModalExpense }: TExpense) => {
 	const [user] = useRecoilState(AuthUser);
 	const queryClient = useQueryClient();
 	const [dialog, setDialog] = useState(false);
@@ -69,6 +70,16 @@ const ExpensePlan = ({ expense }: TExpense) => {
 
 	return (
 		<div className="p-5 flex flex-col md:flex-row gap-4 flex-wrap 2xl:justify-around xl:justify-around lg:justify-center justify-start md:items-baseline ">
+			<div className="w-full flex justify-around mt-2">
+				<button
+					onClick={handleModalExpense}
+					className="px-2 py-2.5 hover:bg-accent-green-900 bg-accent-green-500 rounded-md text-white font-bold "
+				>
+					Tambah Rencana Pengeluaran
+				</button>
+
+				<p className="inline">Data Rencana Pengeluaran</p>
+			</div>
 			{expense?.map((e) => {
 				let percent = (e.usage / e.maxExpense) * 100;
 				return (

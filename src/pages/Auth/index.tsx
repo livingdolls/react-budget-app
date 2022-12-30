@@ -36,7 +36,7 @@ const Auth = () => {
 			<div className="bg-white lg:w-1/2 w-screen">
 				<div className=" h-screen flex flex-col justify-center md:items-center lg:items-start">
 					<div
-						className=" xl:w-3/4 w-full h-3/4 2xl:p-20 p-5 flex flex-col justify-center"
+						className=" xl:w-3/4  w-full h-3/4 2xl:p-20 p-5 flex flex-col justify-center"
 						style={{
 							boxShadow:
 								"rgba(0, 0, 0, 0.56) 37px 22px 70px -20px",

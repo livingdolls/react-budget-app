@@ -4,7 +4,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { SpinnerSmallWhite } from "../../components/Spinner";
 import { NotifyAlert } from "../../components/Toast";
-import { LoginService } from "../../Services/Auth.services";
+import { LoginService } from "../../Services/Auth.service";
 import AuthUser from "../../store/Auth.store";
 import { TUser } from "../../Types/Auth.type";
 

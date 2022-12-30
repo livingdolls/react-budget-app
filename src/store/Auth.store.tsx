@@ -1,7 +1,7 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { atom, selector } from "recoil";
-import { FindProfileUser } from "../Services/Auth.services";
+import { FindProfileUser } from "../Services/Auth.service";
 
 const AuthUser = atom({
 	key: "auth-user",

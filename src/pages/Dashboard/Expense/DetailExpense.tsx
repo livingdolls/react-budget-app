@@ -1,18 +1,35 @@
 import dayjs from "dayjs";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
-import { FindExpensePlan } from "../../../Services/ExpansePlan";
+import { FindExpensePlan } from "../../../Services/ExpansePlan.service";
 import AuthUser from "../../../store/Auth.store";
 import { TExpense } from "../../../Types/Budget.types";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ClimbingBoxLoader } from "react-spinners";
 import Rupiah from "../../../utils/Rupiah";
+import { DeleteSvg, EditSvg, WarningSvg } from "../../../components/svg";
+import { Spinner, SpinnerSmallWhite } from "../../../components/Spinner";
+import { useState } from "react";
+import MainModal from "../../../components/MainModal";
+import EditExpense from "./EditExpense";
+import { Dialog } from "../../../components/Dialog";
+import { DeleteExpenseService } from "../../../Services/Expense.service";
+import { NotifyAlert } from "../../../components/Toast";
 
 const DetailExpense = () => {
 	const { idExpensePlan } = useParams();
+	const queryClient = useQueryClient();
 	const [user] = useRecoilState(AuthUser);
+	const [modalEdit, setModalEdit] = useState<boolean>(false);
+	const [modalHapus, setModaHapus] = useState<boolean>(false);
 	dayjs.extend(customParseFormat);
+	const [select, setSelect] = useState<TExpense>({
+		title: "",
+		budget: 0,
+		idExpensePlan: "",
+		id_expense: "",
+	});
 
 	if (idExpensePlan === undefined) {
 		return <p>H</p>;
@@ -22,9 +39,37 @@ const DetailExpense = () => {
 		FindExpensePlan(idExpensePlan, user)
 	);
 
-	if (expensePlan.isFetching) {
-		return <div>Fetch</div>;
-	}
+	const handleEdit = (data: TExpense) => {
+		setSelect(data);
+		setModalEdit(true);
+	};
+
+	const handleHapus = (data: TExpense) => {
+		setModaHapus(!modalHapus);
+		setSelect(data);
+	};
+
+	const hapusMutate = useMutation(DeleteExpenseService, {
+		onSettled: () => {
+			queryClient.invalidateQueries("budget");
+			queryClient.invalidateQueries("expense");
+		},
+		onError: (err) => {
+			NotifyAlert("error", "Ada kesalahan, silahkan ulangi!");
+		},
+		onSuccess: () => {
+			NotifyAlert("success", "Berhasil menghapus pengeluaran!");
+			setModaHapus(false);
+		},
+	});
+
+	const confirmHapus = () => {
+		const parse = {
+			id_expense: select.id_expense,
+			token: user,
+		};
+		hapusMutate.mutate(parse);
+	};
 
 	if (expensePlan.isLoading) {
 		return (
@@ -36,6 +81,7 @@ const DetailExpense = () => {
 
 	return (
 		<div className="w-full h-full p-2 bg-white shadow-lg">
+			{expensePlan.isFetching ? <Spinner /> : ""}
 			<div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
 					<div className="overflow-x-auto">
@@ -98,7 +144,29 @@ const DetailExpense = () => {
 													{date}
 												</td>
 												<td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-													Aksi
+													<button
+														disabled={
+															expensePlan.isFetching
+														}
+														onClick={() =>
+															handleEdit(e)
+														}
+														className="p-1 bg-accent-green-500 hover:bg-accent-green-900 text-white rounded-full"
+													>
+														<EditSvg />
+													</button>
+
+													<button
+														disabled={
+															expensePlan.isFetching
+														}
+														onClick={() =>
+															handleHapus(e)
+														}
+														className="p-1 bg-material-20 hover:bg-material-10 rounded-full text-white ml-1"
+													>
+														<DeleteSvg />
+													</button>
 												</td>
 											</tr>
 										);
@@ -109,6 +177,74 @@ const DetailExpense = () => {
 					</div>
 				</div>
 			</div>
+			{modalEdit ? (
+				<MainModal
+					judul={"Edit Pengeluaran"}
+					action={() => setModalEdit(false)}
+				>
+					<EditExpense
+						data={select}
+						setSelect={setSelect}
+						action={() => setModalEdit(false)}
+						budgetUsage={
+							expensePlan.data.data.maxExpense -
+							expensePlan.data.data.usage
+						}
+					/>
+				</MainModal>
+			) : null}
+
+			{modalHapus ? (
+				<Dialog>
+					<div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+						<div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+							<div className="sm:flex sm:items-start">
+								<div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+									<WarningSvg />
+								</div>
+								<div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+									<h3
+										className="text-lg font-medium leading-6 text-gray-900"
+										id="modal-title"
+									>
+										Yakin Hapus pengeluaran {select.title} ?
+									</h3>
+									<div className="mt-2">
+										<p className="text-sm text-gray-500">
+											Apa anda yakin ? semua data akan
+											dihapus secara permanent. Aksi ini
+											tidak bisa dibatalkan.
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+							<button
+								onClick={confirmHapus}
+								disabled={hapusMutate.isLoading}
+								className="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+								type="button"
+							>
+								{hapusMutate.isLoading ? (
+									<SpinnerSmallWhite />
+								) : (
+									"Hapus"
+								)}
+							</button>
+
+							<button
+								type="button"
+								onClick={() => setModaHapus(false)}
+								className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+							>
+								Batal
+							</button>
+						</div>
+					</div>
+				</Dialog>
+			) : null}
 		</div>
 	);
 };

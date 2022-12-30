@@ -5,15 +5,15 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import MainModal from "../../components/MainModal";
 import Modal from "../../components/Modal";
 import { SpinnerWhite } from "../../components/Spinner";
-import { ViewExpensePlan } from "../../Services/ExpansePlan";
+import { ViewExpensePlan } from "../../Services/ExpansePlan.service";
 import AuthUser, { ProfileUser } from "../../store/Auth.store";
 import ModalOpen from "../../store/Modal";
 import Rupiah from "../../utils/Rupiah";
 import AddExpensePlan from "./ExpensePlan/AddExpensePlan";
-import AddIncome from "./AddIncome";
+import AddIncome from "./Income/AddIncome";
 import Income from "./Income/Income";
-import ExpensePlan from "./ExpensePlan";
-import Budget from "./Income";
+import ExpensePlan from "./ExpensePlan/ExpensePlan";
+import Profil from "./Profil";
 import { AddSvg } from "../../components/svg";
 import DetailExpense from "./Expense/DetailExpense";
 import { ClimbingBoxLoader } from "react-spinners";
@@ -29,11 +29,8 @@ const Main = () => {
 
 	const {
 		data: budgets,
-		isError,
 		isLoading,
-		isSuccess,
 		isFetching,
-		refetch,
 	} = useQuery("budget", () => ViewExpensePlan(datas.id_user, user), {
 		onSuccess: (budgets) => {
 			const usage = SumExpense(budgets.data.expensive);
@@ -110,23 +107,12 @@ const Main = () => {
 					}
 					to="/home/budget"
 				>
-					INFO BUDGET
+					PROFILE
 				</NavLink>
 			</div>
 			{/* END LINK */}
 
 			<div className="w-[80%] border-b-2 mx-auto border-accent-green-500"></div>
-
-			<div className="w-full flex justify-around mt-4">
-				<button
-					onClick={handleModalExpense}
-					className="px-2 py-2.5 hover:bg-accent-green-900 bg-accent-green-500 rounded-md text-white font-bold "
-				>
-					Tambah Rencana Pengeluaran
-				</button>
-
-				<button>Info</button>
-			</div>
 
 			{/* ROUTE */}
 			<div className="">
@@ -134,14 +120,17 @@ const Main = () => {
 					<Route
 						index
 						element={
-							<ExpensePlan expense={budgets.data.expensive} />
+							<ExpensePlan
+								expense={budgets.data.expensive}
+								handleModalExpense={handleModalExpense}
+							/>
 						}
 					/>
 					<Route
 						path="/income"
 						element={<Income budget={budgets.data} />}
 					/>
-					<Route path="/budget" element={<Budget />} />
+					<Route path="/budget" element={<Profil />} />
 					<Route
 						path="/expense-plan/:idExpensePlan"
 						element={<DetailExpense />}

@@ -5,11 +5,13 @@ import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import ProtectRoute from "./middleware/ProtectRoute";
+import MainPage from "./pages";
 
 function App() {
 	return (
 		<div className="">
 			<Routes>
+				<Route path="/" element={<MainPage />} />
 				<Route element={<ProtectRoute />}>
 					<Route path="/home/*" element={<Main />} />
 				</Route>

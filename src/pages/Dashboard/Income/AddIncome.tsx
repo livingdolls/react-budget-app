@@ -1,37 +1,33 @@
+import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { useRecoilState } from "recoil";
 import { SpinnerSmallWhite } from "../../../components/Spinner";
 import { NotifyAlert } from "../../../components/Toast";
-import { EditExpensePlanService } from "../../../Services/ExpansePlan.service";
+import { PostIncomeService } from "../../../Services/Income.service";
 import AuthUser from "../../../store/Auth.store";
-import BudgetStore from "../../../store/Budget.store";
-import { Expense } from "../../../Types/Budget.types";
-import Rupiah from "../../../utils/Rupiah";
+import { TBudget } from "../../../Types/Budget.types";
 
-type EditExProps = {
-	expense: Expense;
-	setEditExpense: React.Dispatch<React.SetStateAction<Expense>>;
-	setModalEdit: React.Dispatch<React.SetStateAction<boolean>>;
+type PIncome = {
+	budget: TBudget;
+	action: () => void;
 };
 
-const EditExpensePlan = ({
-	expense,
-	setEditExpense,
-	setModalEdit,
-}: EditExProps) => {
-	const [user] = useRecoilState(AuthUser);
-	const [budget] = useRecoilState(BudgetStore);
+const AddIncome = ({ budget, action }: PIncome) => {
 	const queryClient = useQueryClient();
-	const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setEditExpense({ ...expense, [name]: value });
-	};
-
-	const mutate = useMutation(EditExpensePlanService, {
+	const [user] = useRecoilState(AuthUser);
+	const [income, setIncome] = useState({
+		title: "",
+		budget: 0,
+	});
+	const mutate = useMutation(PostIncomeService, {
 		onSettled: () => {
 			queryClient.invalidateQueries("budget");
 		},
-		onError: (err: any) => {
+		onSuccess: async () => {
+			NotifyAlert("success", "Berhasil menambah income!");
+			action();
+		},
+		onError: async (err: any) => {
 			const zod = err.response.data;
 			if (err.response.status === 400) {
 				zod.map((e: any) => {
@@ -39,34 +35,25 @@ const EditExpensePlan = ({
 				});
 			}
 
-			if (err.response.status === 401) {
-				NotifyAlert("error", "Akses dilarang");
-			}
-
 			NotifyAlert("error", err.response.data.message);
-		},
-		onSuccess: () => {
-			NotifyAlert("success", "Berhasil mengubah rencana pengeluaran!");
-			setModalEdit(false);
 		},
 	});
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		const data = {
-			idMainBudget: expense.idMainBudget,
-			title: expense.title,
-			maxExpense: expense.maxExpense,
-			id_expensePlan: expense.id_expensePlan,
-		};
-		const newData = {
-			data: data,
+			idBudget: budget.id_main_budget,
+			title: income.title,
+			budget: income.budget,
 			token: user,
 		};
-
-		mutate.mutate(newData);
+		mutate.mutate(data);
 	};
 
+	const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setIncome({ ...income, [name]: value });
+	};
 	return (
 		<form onSubmit={handleSubmit}>
 			<div className="mb-6">
@@ -74,15 +61,14 @@ const EditExpensePlan = ({
 					htmlFor={"income"}
 					className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
 				>
-					Rencana Pengeluaran
+					Income
 				</label>
 				<input
 					type="text"
 					id="title"
 					name="title"
-					value={expense.title}
 					className="bg-gray-50  ring-1 ring-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent-green-500 focus:outline-none focus:border-transparent border border-gray-300  0 focus:border-accent-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 "
-					placeholder="Rencana Pengeluaran"
+					placeholder="Income"
 					required
 					onChange={handleForm}
 				/>
@@ -93,19 +79,15 @@ const EditExpensePlan = ({
 					htmlFor={"budget"}
 					className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
 				>
-					Budget Max{" "}
-					<p className="text-bold inline text-red-500">{`${Rupiah(
-						Number(budget.budget - budget.usage)
-					)}`}</p>
+					Budget
 				</label>
 				<input
 					type="number"
-					id="maxExpense"
-					name="maxExpense"
+					id="budget"
+					name="budget"
 					className="bg-gray-50  ring-1 ring-gray-300 text-gray-900 text-sm rounded-lg focus:ring-1 focus:ring-accent-green-500 focus:outline-none focus:border-transparent border border-gray-300  0 focus:border-accent-green-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 "
 					placeholder="0"
 					required
-					value={expense.maxExpense}
 					onChange={handleForm}
 				/>
 			</div>
@@ -116,11 +98,11 @@ const EditExpensePlan = ({
 					disabled={mutate.isLoading}
 					className="text-white text-bold mt-4 bg-accent-green-500 hover:bg-accent-green-900 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-3 py-1.5 mr-2 mb-2 "
 				>
-					{mutate.isLoading ? <SpinnerSmallWhite /> : "Edit"}
+					{mutate.isLoading ? <SpinnerSmallWhite /> : "Tambah"}
 				</button>
 			</div>
 		</form>
 	);
 };
 
-export default EditExpensePlan;
+export default AddIncome;

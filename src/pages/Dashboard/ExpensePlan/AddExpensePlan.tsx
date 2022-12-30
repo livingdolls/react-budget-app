@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import Rupiah from "../../../utils/Rupiah";
 import SumExpense from "../../../utils/SumExpense";
-import { CreateExpensePlan } from "../../../Services/ExpansePlan";
+import { CreateExpensePlan } from "../../../Services/ExpansePlan.service";
 import { NotifyAlert } from "../../../components/Toast";
 import { SpinnerSmallWhite } from "../../../components/Spinner";
 import { useRecoilState } from "recoil";
@@ -30,7 +30,6 @@ const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
 	const [budget] = useRecoilState(BudgetStore);
 	const [user] = useRecoilState(AuthUser);
 	const queryClient = useQueryClient();
-	const maxExpense = SumExpense(exp);
 	const [, setVisible] = useRecoilState(ModalOpen);
 	const [expense, setExpense] = useState<expense>({
 		title: "",

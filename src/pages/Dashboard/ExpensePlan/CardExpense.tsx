@@ -1,5 +1,3 @@
-import { useRecoilState } from "recoil";
-import ModalOpen from "../../../store/Modal";
 import { Expense } from "../../../Types/Budget.types";
 import Rupiah from "../../../utils/Rupiah";
 import { DeleteSvg, EditSvg } from "../../../components/svg";
@@ -61,7 +59,9 @@ const CardExpense = ({ num, data, del, edit, addExpense }: TCExpense) => {
 							backgroundColor: status,
 						}}
 					>
-						<p className="mr-5 text-white font-bold">{num} %</p>
+						<p className="mr-5 text-white font-bold">
+							{num.toFixed()} %
+						</p>
 					</div>
 				</div>
 
