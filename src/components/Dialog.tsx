@@ -5,7 +5,7 @@ type TDialog = {
 export const Dialog = ({ children }: TDialog) => {
 	return (
 		<div
-			className="relative z-10"
+			className="fixed inset-0  flex justify-center items-center"
 			aria-labelledby="modal-title"
 			role="dialog"
 			aria-modal="true"

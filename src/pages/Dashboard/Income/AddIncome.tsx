@@ -22,6 +22,7 @@ const AddIncome = ({ budget, action }: PIncome) => {
 	const mutate = useMutation(PostIncomeService, {
 		onSettled: () => {
 			queryClient.invalidateQueries("budget");
+			queryClient.invalidateQueries("income");
 		},
 		onSuccess: async () => {
 			NotifyAlert("success", "Berhasil menambah income!");

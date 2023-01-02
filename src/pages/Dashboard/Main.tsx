@@ -20,6 +20,12 @@ import { ClimbingBoxLoader } from "react-spinners";
 import BudgetStore from "../../store/Budget.store";
 import SumExpense from "../../utils/SumExpense";
 
+const Menu = [
+	{ to: "/home/", name: "Rencana Pengeluaran" },
+	{ to: "/home/income", name: "Pemasukan" },
+	{ to: "/home/budget", name: "Profile" },
+];
+
 const Main = () => {
 	const [expense, setExpense] = useRecoilState(ModalOpen);
 	const datas = useRecoilValue(ProfileUser);
@@ -40,6 +46,7 @@ const Main = () => {
 				usage: usage,
 			});
 		},
+		refetchOnWindowFocus: false,
 	});
 
 	const handleModalExpense = () => {
@@ -77,38 +84,21 @@ const Main = () => {
 
 			{/* NAVLINK */}
 			<div className="p-5 flex justify-center ">
-				<NavLink
-					className={({ isActive }) =>
-						isActive
-							? "m-2 px-5 py-2 bg-accent-green-500 font-bold rounded-md text-white hover:bg-accent-green-900"
-							: "m-2 px-5 py-2  font-bold rounded-md text-accent-green-900"
-					}
-					to="/home/"
-				>
-					<p>EXPENSE PLAN</p>
-				</NavLink>
-
-				<NavLink
-					className={({ isActive }) =>
-						isActive
-							? "m-2 px-5 py-2 bg-accent-green-500 font-bold rounded-md text-white hover:bg-accent-green-900"
-							: "m-2 px-5 py-2  font-bold rounded-md text-accent-green-900"
-					}
-					to="/home/income"
-				>
-					INCOME
-				</NavLink>
-
-				<NavLink
-					className={({ isActive }) =>
-						isActive
-							? "m-2 px-5 py-2 bg-accent-green-500 font-bold rounded-md text-white hover:bg-accent-green-900"
-							: "m-2 px-5 py-2  font-bold rounded-md text-accent-green-900"
-					}
-					to="/home/budget"
-				>
-					PROFILE
-				</NavLink>
+				{Menu.map((e) => {
+					return (
+						<NavLink
+							className={({ isActive }) =>
+								isActive
+									? "m-2 px-5 py-2 bg-accent-green-500 font-bold rounded-md text-white hover:bg-accent-green-900"
+									: "m-2 px-5 py-2  font-bold rounded-md text-accent-green-900"
+							}
+							to={e.to}
+							key={e.to}
+						>
+							<p>{e.name}</p>
+						</NavLink>
+					);
+				})}
 			</div>
 			{/* END LINK */}
 
