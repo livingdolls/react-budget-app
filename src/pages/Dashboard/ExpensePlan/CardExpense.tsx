@@ -15,25 +15,25 @@ const CardExpense = ({ num, data, del, edit, addExpense }: TCExpense) => {
 	let status = "#1aebb6";
 
 	if (num >= 0 && num <= 10) {
-		status = "#d63031";
-	} else if (num >= 11 && num <= 20) {
-		status = "#ff7675";
-	} else if (num >= 21 && num <= 30) {
-		status = "#fab1a0";
-	} else if (num >= 31 && num <= 40) {
-		status = "#ffeaa7";
-	} else if (num >= 41 && num <= 50) {
-		status = "#fdcb6e";
-	} else if (num >= 51 && num <= 60) {
-		status = "#74b9ff";
-	} else if (num >= 61 && num <= 70) {
-		status = "#0984e3";
-	} else if (num >= 71 && num <= 80) {
-		status = "#81ecec";
-	} else if (num >= 81 && num <= 90) {
-		status = "#55efc4";
-	} else if (num >= 91 && num <= 100) {
 		status = "#00b894";
+	} else if (num >= 11 && num <= 20) {
+		status = "#55efc4";
+	} else if (num >= 21 && num <= 30) {
+		status = "#81ecec";
+	} else if (num >= 31 && num <= 40) {
+		status = "#0984e3";
+	} else if (num >= 41 && num <= 50) {
+		status = "#74b9ff";
+	} else if (num >= 51 && num <= 60) {
+		status = "#fdcb6e";
+	} else if (num >= 61 && num <= 70) {
+		status = "#ffeaa7";
+	} else if (num >= 71 && num <= 80) {
+		status = "#fab1a0";
+	} else if (num >= 81 && num <= 90) {
+		status = "#ff7675";
+	} else if (num >= 91 && num <= 100) {
+		status = "#d63031";
 	} else {
 		status = "#1aebb6";
 	}
@@ -100,7 +100,7 @@ const CardExpense = ({ num, data, del, edit, addExpense }: TCExpense) => {
 							<button
 								type="button"
 								onClick={addExpense}
-								className="text-accent-green-500 mt-4 bg-white hover:bg-accent-green-500 hover:text-white border-accent-green-500 border-2 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 mr-2 mb-2  focus:outline-none"
+								className="text-accent-green-500 mt-4 bg-white hover:bg-accent-green-500 hover:text-white border-accent-green-500 border-2 focus:ring-1 focus:ring-blue-300 font-medium rounded-lg text-xl px-5 py-2.5 mr-2 mb-2  focus:outline-none"
 							>
 								Lihat
 							</button>

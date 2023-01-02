@@ -3,6 +3,7 @@ import Rupiah from "../../../utils/Rupiah";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DeleteSvg, EditSvg } from "../../../components/svg";
+import id from "dayjs/locale/id";
 
 type incomeProps = {
 	income: TIncome[];
@@ -16,6 +17,7 @@ export const TableIncome = ({
 	hapusIncome,
 }: incomeProps) => {
 	dayjs.extend(customParseFormat);
+	dayjs.locale(id);
 	return (
 		<div className="flex flex-col">
 			<div className="overflow-x-auto sm:-mx-6 lg:-mx-8">

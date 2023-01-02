@@ -35,8 +35,13 @@ const DetailExpense = () => {
 		return <p>H</p>;
 	}
 
-	const expensePlan = useQuery("expense", () =>
-		FindExpensePlan(idExpensePlan, user)
+	const expensePlan = useQuery(
+		"expense",
+		() => FindExpensePlan(idExpensePlan, user),
+		{
+			refetchOnWindowFocus: false,
+			refetchInterval: 15000,
+		}
 	);
 
 	const handleEdit = (data: TExpense) => {

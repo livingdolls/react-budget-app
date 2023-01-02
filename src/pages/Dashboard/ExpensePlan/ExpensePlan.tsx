@@ -77,8 +77,6 @@ const ExpensePlan = ({ expense, handleModalExpense }: TExpense) => {
 				>
 					Tambah Rencana Pengeluaran
 				</button>
-
-				<p className="inline">Data Rencana Pengeluaran</p>
 			</div>
 			{expense?.map((e) => {
 				let percent = (e.usage / e.maxExpense) * 100;
