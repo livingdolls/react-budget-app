@@ -28,6 +28,12 @@ const Login = () => {
 		{
 			onError: (error: any) => {
 				NotifyAlert("error", error.response.data);
+				const zod = error.response.data;
+				if (error.response.status === 400) {
+					zod.map((e: any) => {
+						NotifyAlert("error", e.message);
+					});
+				}
 			},
 			onSuccess: (data) => {
 				setAuth(data.signToken);
@@ -92,7 +98,10 @@ const Login = () => {
 						disabled={isLoading}
 						className="p-3 bg-accent-green-500 rounded-md w-full text-gray-900 font-bold hover:bg-accent-green-900"
 					>
-						{isLoading ? <SpinnerSmallWhite /> : "LOGIN"}
+						<div className="flex justify-center">
+							{isLoading ? <SpinnerSmallWhite /> : ""}
+							<p className="inline">LOGIN</p>
+						</div>
 					</button>
 				</div>
 			</form>
