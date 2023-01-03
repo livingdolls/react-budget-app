@@ -75,7 +75,9 @@ export const TableIncome = ({
 												{e.title}
 											</td>
 											<td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-												{Rupiah(e.budget)}
+												<p className="p-1 px-2 inline bg-accent-green-500 text-white font-semibold rounded-full">
+													{Rupiah(e.budget)}
+												</p>
 											</td>
 											<td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
 												{date}

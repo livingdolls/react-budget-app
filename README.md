@@ -12,7 +12,7 @@ I'm a full stack developer and i think im funny
 
 ## Tech Stack
 
-**Client:** React,Typescript, TailwindCSS, Recoil, React Query
+**Client:** React, Typescript, TailwindCSS, Recoil, React Query
 
 **Server:** Node, Express, Typescript, MySql, Prisma, Zod
 
@@ -28,12 +28,14 @@ I'm a full stack developer and i think im funny
 
 ## Screenshots
 
-#Desktop
+# Desktop
+
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Home%20Page.png)
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Income%20Page.png)
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Login%20Page.png)
 
-#Mobile
+# Mobile
+
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Home%20Mobile.png)
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Income%20Mobile.png)
 ![alt text](https://raw.githubusercontent.com/livingdolls/react-budget-app/main/src/assets/screenshoot/Login%20Mobile.png)

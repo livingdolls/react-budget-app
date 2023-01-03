@@ -131,10 +131,7 @@ const Main = () => {
 
 			<div>
 				<Modal judul={"Tambah Pengeluaran"}>
-					<AddExpensePlan
-						exp={budgets.data.expensive}
-						idBudget={budgets.data.id_main_budget}
-					/>
+					<AddExpensePlan idBudget={budgets.data.id_main_budget} />
 				</Modal>
 			</div>
 

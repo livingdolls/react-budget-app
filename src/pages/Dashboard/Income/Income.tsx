@@ -11,7 +11,9 @@ import {
 	GetIncomeService,
 } from "../../../Services/Income.service";
 import AuthUser from "../../../store/Auth.store";
+import BudgetStore from "../../../store/Budget.store";
 import { TBudget, TIncome } from "../../../Types/Budget.types";
+import Rupiah from "../../../utils/Rupiah";
 import EditIncome from "./EditIncome";
 import { TableIncome } from "./TableIncome";
 
@@ -21,6 +23,7 @@ type TIncomeProps = {
 const Income = ({ budget }: TIncomeProps) => {
 	const queryClient = useQueryClient();
 	const [user] = useRecoilState(AuthUser);
+	const [budgets] = useRecoilState(BudgetStore);
 	const [modal, setModal] = useState<boolean>(false);
 	const [hapus, setHapus] = useState<boolean>(false);
 	const [selectIncome, setSelectIncome] = useState<TIncome>({
@@ -82,6 +85,12 @@ const Income = ({ budget }: TIncomeProps) => {
 	return (
 		<div>
 			<div className=" w-[90%] m-auto bg-white shadow-2xl">
+				<p className="mt-5 mb-1 text-gray-600 font-semibold">
+					Budget yang belum digunakan untuk rencana pengeluaran{" "}
+					<p className="text-material-10 inline">
+						{Rupiah(budgets.budget - budgets.usage) ?? 0}
+					</p>
+				</p>
 				{income.isLoading ? (
 					<Spinner />
 				) : (

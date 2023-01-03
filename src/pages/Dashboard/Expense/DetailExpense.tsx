@@ -16,10 +16,12 @@ import EditExpense from "./EditExpense";
 import { Dialog } from "../../../components/Dialog";
 import { DeleteExpenseService } from "../../../Services/Expense.service";
 import { NotifyAlert } from "../../../components/Toast";
+import id from "dayjs/locale/id";
 
 const DetailExpense = () => {
 	const { idExpensePlan } = useParams();
 	const queryClient = useQueryClient();
+	dayjs.locale(id);
 	const [user] = useRecoilState(AuthUser);
 	const [modalEdit, setModalEdit] = useState<boolean>(false);
 	const [modalHapus, setModaHapus] = useState<boolean>(false);
@@ -32,7 +34,7 @@ const DetailExpense = () => {
 	});
 
 	if (idExpensePlan === undefined) {
-		return <p>H</p>;
+		return <p>Maaf, pengeluaran tidak ditemukan</p>;
 	}
 
 	const expensePlan = useQuery(
@@ -40,7 +42,7 @@ const DetailExpense = () => {
 		() => FindExpensePlan(idExpensePlan, user),
 		{
 			refetchOnWindowFocus: false,
-			refetchInterval: 15000,
+			refetchInterval: 150000,
 		}
 	);
 
@@ -87,6 +89,17 @@ const DetailExpense = () => {
 	return (
 		<div className="w-full h-full p-2 bg-white shadow-lg">
 			{expensePlan.isFetching ? <Spinner /> : ""}
+			<p className="text-md font-semibold text-gray-600  mt-2">
+				Pengeluaran untuk{" "}
+				<p className="text-accent-green-900 inline">
+					{expensePlan?.data?.data?.title}
+				</p>
+			</p>
+
+			<p className="text-md font-semibold text-gray-600  mt-2">
+				Pengeluaran digunakan {Rupiah(expensePlan?.data?.data?.usage)} /{" "}
+				{Rupiah(expensePlan?.data?.data?.maxExpense)}
+			</p>
 			<div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
 				<div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
 					<div className="overflow-x-auto">
@@ -143,7 +156,9 @@ const DetailExpense = () => {
 													{e.title}
 												</td>
 												<td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-													{Rupiah(e.budget)}
+													<p className="p-1 bg-material-10 inline rounded-full text-white px-2 font-semibold">
+														{Rupiah(e.budget)}
+													</p>
 												</td>
 												<td className="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
 													{date}

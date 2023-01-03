@@ -12,7 +12,6 @@ import AuthUser from "../../../store/Auth.store";
 import BudgetStore from "../../../store/Budget.store";
 
 type propsExpensePlan = {
-	exp: Expense[];
 	idBudget: string;
 };
 
@@ -26,7 +25,7 @@ export type TAddExpense = {
 	idBudget: string;
 };
 
-const AddExpensePlan = ({ exp, idBudget }: propsExpensePlan) => {
+const AddExpensePlan = ({ idBudget }: propsExpensePlan) => {
 	const [budget] = useRecoilState(BudgetStore);
 	const [user] = useRecoilState(AuthUser);
 	const queryClient = useQueryClient();
