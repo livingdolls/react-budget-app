@@ -43,6 +43,10 @@ const Login = () => {
 		}
 	);
 
+	if (isError) {
+		NotifyAlert("error", "Mohon maaf, ada kesalahan");
+	}
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		await mutateAsync(user);
