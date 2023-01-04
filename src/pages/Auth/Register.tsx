@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "react-query";
 import { NavLink, useNavigate } from "react-router-dom";
+import { SpinnerSmallWhite } from "../../components/Spinner";
 import { NotifyAlert } from "../../components/Toast";
 import { RegisterService } from "../../Services/Auth.service";
 
@@ -116,7 +117,10 @@ const Register = () => {
 						type="submit"
 						className="p-3 bg-accent-green-500 rounded-md w-full text-gray-900 font-bold hover:bg-accent-green-900"
 					>
-						REGISTER
+						<div className="flex justify-center">
+							{mutate.isLoading ? <SpinnerSmallWhite /> : ""}
+							<p className="inline">REGISTER</p>
+						</div>
 					</button>
 				</div>
 
